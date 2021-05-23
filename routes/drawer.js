@@ -1,0 +1,138 @@
+import React from "react";
+import {
+  View,
+  Image,
+  Dimensions,
+  SafeAreaView,
+  Text,
+  Alert,
+  StyleSheet,
+} from "react-native";
+import {
+  createDrawerNavigator,
+  DrawerNavigatorItems,
+} from "react-navigation-drawer";
+import Profile from "../screens/profile";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import firebase from "../config/firebase";
+import { AppStack } from "./homeStack";
+
+const handleLogout = (navigation) => {
+  firebase
+    .auth()
+    .signOut()
+    .then(function () {
+      console.log("Logged out");
+      navigation.navigate("Auth");
+    })
+    .catch(function (err) {
+      Alert.alert(
+        "Error",
+        "Something Went Wrong",
+        [
+          {
+            text: "Retry",
+            onPress: () => {
+              handleLogout();
+            },
+          },
+        ],
+        { cancelable: false }
+      );
+    });
+};
+const customContentComponent = (props) => (
+  <SafeAreaView
+    style={{ flex: 1, height: "100%", backgroundColor: "white" }}
+    forceInset={{ top: "always", horizontal: "never" }}
+  >
+    <View
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        marginTop: 30,
+      }}
+    >
+      <Image
+        source={require("../assets/splash.png")}
+        style={{ width: 150, height: 150 }}
+        resizeMode="contain"
+      />
+    </View>
+    <View style={{ marginLeft: 20, marginTop: 0 }}>
+      <DrawerNavigatorItems {...props} />
+      <TouchableOpacity
+        onPress={() =>
+          Alert.alert(
+            "Log out",
+            "Do you want to logout?",
+            [
+              {
+                text: "Cancel",
+                onPress: () => {
+                  props.navigation.closeDrawer();
+                },
+              },
+              {
+                text: "Confirm",
+                onPress: () => {
+                  console.log("logout");
+                  handleLogout(props.navigation);
+                },
+              },
+            ],
+            { cancelable: false }
+          )
+        }
+      >
+        <Text style={styles.contentOptions}>Logout</Text>
+      </TouchableOpacity>
+    </View>
+  </SafeAreaView>
+);
+
+const WINDOW_WIDTH = Dimensions.get("window").width;
+
+const DrawerNavigator = createDrawerNavigator(
+  {
+    Home: {
+      screen: AppStack,
+    },
+    // Logout: {
+    //   screen: Logout,
+    // },
+    Profile: {
+      screen: Profile,
+    },
+  },
+  {
+    contentOptions: {
+      activeTintColor: "#548ff7",
+      activeBackgroundColor: "#fffff",
+      inactiveTintColor: "grey",
+      inactiveBackgroundColor: "transparent",
+      backgroundColor: "grey",
+      labelStyle: {
+        fontSize: 20,
+        marginLeft: 10,
+        marginTop: 20,
+      },
+    },
+    drawerWidth: Math.min(WINDOW_WIDTH * 0.8, 300),
+    contentComponent: customContentComponent,
+  },
+  {
+    unmountInactiveRoutes: true,
+  }
+);
+const styles = StyleSheet.create({
+  contentOptions: {
+    fontSize: 20,
+    marginLeft: 10,
+    marginTop: 20,
+    color: "grey",
+    fontWeight: "bold",
+  },
+});
+export default DrawerNavigator;
