@@ -17,7 +17,7 @@
     "expo-permissions": "^8.1.0",
     "firebase": "8.2.1",
     "formik": "^2.1.4",
-    "moment": "^2.25.3",
+    "moment": "^2.29.4",
     "native-base": "^2.15.0",
     "react": "~16.9.0",
     "react-dom": "~16.9.0",
